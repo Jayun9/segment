@@ -19,6 +19,7 @@ y[y!=0] = equalized.reshape(equalized.shape[0])
 img_ycbcr2 = cv2.merge([y,cr,cb])
 
 dst = cv2.cvtColor(img_ycbcr2,cv2.COLOR_YCrCb2BGR)
-dst[dst[:,:,0] == 0], dst[dst[:,:,2] == 0], dst[dst[:,:,2] == 0] = 255, 255,255
+dst[mask == 0] =255,255,255
+# dst[dst[:,:,0] == 0], dst[dst[:,:,2] == 0], dst[dst[:,:,2] == 0] = 255, 255,255
 
 imshow(dst)
