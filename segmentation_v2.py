@@ -82,6 +82,14 @@ class Segmentation:
                 filename = "{}/{}_{}_.{}".format(path,path_list[0],category,path_list[1])
                 cv2.imwrite(filename,img)
 
+    def save_file_v2(self,image_dic, path): #이미지 딕셔너리를 받아와서 저장
+        for _, imageinfo in image_dic.items():
+            for imagename, img, category_list in imageinfo:
+                category_name = '_'.join(category_list)
+                path_list = imagename.split('.')
+                filename = "{}/{}_{}_.{}".format(path,path_list[0],category_name,path_list[1])
+                cv2.imwrite(filename,img)
+
     def segment(self,imagepath): #이미지 세분화  
         for key in self.categoryname.values(): #세분화한 이미지를 카테고리 이름별로 저장하기 위해서 딕셔너리를 만듦
             self.segment_image.setdefault(key)
@@ -98,6 +106,11 @@ class Segmentation:
             result_img = self.mask_image(img,contours)
             self.segment_image[category].append((imagename, result_img,image_id)) #처리한 이미지를 카테고리 별로 필요한 정보를 append후 저장
 
+    def segment_v2_imagename(self,imagename):
+        name_list = imagename.split('.')
+        new_imagename = "{}_{}.{}".format(name_list[0],"v2",name_list[1])
+        return new_imagename
+
     def segment_v2(self,imagepath): #이미지 세분화 v2    
         #v2를 실행하려니 한 이미지 안에 세그멘트가 여러개 있는 경우가 있었음, 이미지 id에 해당하는 모든 세멘트를 저장할 필요가 있었음
         for key in self.imagename.keys(): 
@@ -110,11 +123,15 @@ class Segmentation:
             seg_category = self.key_segmnet[image_id]
             imagename = self.imagename[image_id]
             img = self.imread(imagepath,imagename)
+            imagename = self.segment_v2_imagename(imagename)
+            category_name = []
             for seg, category_id in seg_category: # 이미지 아이디에 해당하는 세그멘테이션, 카테고리 이름을 하나씩 불러와서 처리 
                 if category_id == 21 or category_id == 22: 
                     contours = self.return_contours(seg)
                     img = self.mask_image2(img,contours) #이미지에 중첩해서 처리
-            self.segment_image2[image_id].append((imagename, img,image_id)) #segment_image2에 저장
+                else:
+                    category_name.append(self.categoryname[category_id])
+            self.segment_image2[image_id].append((imagename, img,category_name)) #segment_image2에 저장
 
 jsonfile = pc.ProcessJSON()
 koo = Segmentation()
@@ -123,8 +140,8 @@ jsonfile.jsonFileLoad("./.exports", "coco-1594624682.9582064.json")
 json_data = jsonfile.json
 
 koo.datasetting(json_data)
-koo.segment("./emblem_image")
+# koo.segment("./emblem_image")
 koo.segment_v2("./emblem_image")
 # koo.save_file(koo.segment_image,'./output')
-# koo.save_file(koo.segment_image2,'./output2')
+koo.save_file_v2(koo.segment_image2,'./output2')
 
