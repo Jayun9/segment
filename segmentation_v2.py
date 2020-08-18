@@ -140,8 +140,8 @@ jsonfile.jsonFileLoad("./.exports", "coco-1594624682.9582064.json")
 json_data = jsonfile.json
 
 koo.datasetting(json_data)
-# koo.segment("./emblem_image")
+koo.segment("./emblem_image")
 koo.segment_v2("./emblem_image")
-# koo.save_file(koo.segment_image,'./output')
+koo.save_file(koo.segment_image,'./output')
 koo.save_file_v2(koo.segment_image2,'./output2')
 
