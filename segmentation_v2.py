@@ -58,17 +58,13 @@ class Segmentation:
         json_name = "{}.json".format(filename)
         file_path = "{}/{}".format(json_save_path,json_name)
         self.myjson["images"][0]["file_name"] = filename
+        category = [category for category in self.categories if category["id"] == category_id]
+        annotation = [annotation for annotation in self.annotations if annotation["category_id"] == category_id]
         myjson_ = {
             "images" : self.myjson["images"],
-            "categories" : [],
-            "annotations" : []
+            "categories" : category,
+            "annotations" : annotation
         }
-        for category in self.categories:
-            if category["id"] == category_id:
-                myjson_["categories"].append(category)
-        for annotation in self.annotations:
-            if annotation['category_id'] == category_id:
-                myjson_['annotations'].append(annotation)
         with open(file_path, 'w') as outfile:
             js.dump(myjson_, outfile)            
 
